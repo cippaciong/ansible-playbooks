@@ -1,0 +1,16 @@
+---
+- name: install php5-fpm
+  apt: name=php5-fpm state=latest
+
+- name: copy php.ini configuration file
+  template: src=php.ini.j2 dest={{ php_dir }}/php.ini
+  notify: restart php-fpm
+
+- name: copy php-fpm.conf configuration file
+  template: src=php-fpm.conf.j2 dest={{ php_dir }}/php-fpm.conf
+  notify: restart php-fpm
+
+- name: copy php-fpm pool configuration file
+  template: src=www.conf.j2 dest={{ php_dir }}/pool.d/www.conf
+  notify: restart php-fpm
+

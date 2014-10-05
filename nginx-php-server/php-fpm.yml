@@ -1,0 +1,8 @@
+---
+- name: install php-fpm and copy configuration files
+  hosts: navigatoria
+  user: navigatoria
+  sudo: yes
+
+  roles:
+    - php-fpm
