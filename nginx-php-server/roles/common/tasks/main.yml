@@ -1,9 +1,9 @@
 ---
 - name: make sure tmux is installed
-  apt: name=tmux state=present
+  apt: name=tmux state=latest
 
 - name: make sure mosh is installed
-  apt: name=mosh state=present
+  apt: name=mosh state=latest
 
 - name: set up iptables rules
   copy: src=iptables.rules dest=/etc/iptables.rules

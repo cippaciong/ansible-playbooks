@@ -1,0 +1,11 @@
+---
+- name: install nginx
+  apt: name=nginx state=latest
+
+- name: copy nginx configuration for git.navigatoria.tk
+  template: src=git.navigatoria.tk.j2 dest={{ nginx_available }}/git.navigatoria.tk
+
+- name: create soft links for nginx sites-enabled
+  command: ln -s  {{ nginx_available }}/git.navigatoria.tk
+                  {{ nginx_enabled }}/git.navigatoria.tk
+  notify: reload nginx
