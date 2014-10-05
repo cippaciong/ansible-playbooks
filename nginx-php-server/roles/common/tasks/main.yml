@@ -1,0 +1,17 @@
+---
+- name: make sure tmux is installed
+  apt: name=tmux state=present
+
+- name: make sure mosh is installed
+  apt: name=mosh state=present
+
+- name: set up iptables rules
+  copy: src=iptables.rules dest=/etc/iptables.rules
+
+- name: restore iptables rules on boot
+  copy: src=iptablesload.j2 dest=/etc/network/if-pre-up.d/iptablesload
+          owner=root group=root mode=0755
+  copy: src=iptablessave.j2 dest=/etc/network/if-post-down.d/iptablessave
+          owner=root group=root mode=0755
+  notify:
+     - reload iptables rules

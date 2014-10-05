@@ -1,0 +1,8 @@
+---
+- name: install common software like mosh or tmux and configure iptables
+  hosts: navigatoria
+  user: navigatoria
+  sudo: yes
+
+  roles:
+    - common
