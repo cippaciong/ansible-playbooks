@@ -1,0 +1,10 @@
+---
+- name: set up a full featured nginx+php-fpm server
+  hosts: navigatoria
+  user: navigatoria
+  sudo: yes
+
+  roles:
+    - common
+    - nginx
+    - php-fpm
