@@ -7,5 +7,14 @@
 
 - name: create soft links for nginx sites-enabled
   command: ln -s  {{ nginx_available }}/git.navigatoria.tk
-                  {{ nginx_enabled }}/git.navigatoria.tk
+                  {{ nginx_enabled }}/git.navigatoria.tk creates={{ nginx_enabled }}/git.navigatoria.tk
+  notify: reload nginx
+
+- name: copy nginx configuration for navigatoria.tk
+  template: src=navigatoria.tk.j2 dest={{ nginx_available }}/navigatoria.tk
+
+- name: create soft links for nginx sites-enabled
+  command: ln -s  {{ nginx_available }}/navigatoria.tk
+                  {{ nginx_enabled }}/navigatoria.tk creates={{ nginx_enabled }}/git.navigatoria.tk
+
   notify: reload nginx

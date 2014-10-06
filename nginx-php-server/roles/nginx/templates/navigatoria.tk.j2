@@ -1,0 +1,20 @@
+server {
+     listen   80;
+     server_name    navigatoria.tk www.navigatoria.tk;
+
+    access_log /var/log/nginx/navigatoria.access.log;
+    error_log /var/log/nginx/navigatoria.error.log;
+
+     root /var/www/navigatoria;
+     index index.php index.html index.htm;
+
+    
+        location ~ ^(.+?\.php)(/.*)?$ {
+            try_files $uri =404;
+            fastcgi_pass unix:/var/run/php5-fpm.sock;
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            include fastcgi_params;
+        }
+
+}
