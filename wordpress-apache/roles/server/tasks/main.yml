@@ -3,7 +3,7 @@
   apt: update_cache=yes cache_valid_time=3600
   sudo: yes
 
-- name: Install requred software
+- name: Install required software
   apt: name={{ item }} state=present
   sudo: yes
   with_items:
