@@ -35,11 +35,11 @@
     owner={{ wordpress_user }}
     group={{ wordpress_user }}
     mode=0644
-    state=present
+    state=touch
   sudo: yes
 
 - name: Populate authorized_keys
-  command: echo -n 'from="127.0.0.1" ' | cat - /home/{{ wordpress_user }}/wp_rsa.pub > /home/{{ wordpress_user }}/.ssh/authorized_keys
+  shell: echo -n 'from="127.0.0.1" ' | cat - /home/{{ wordpress_user }}/wp_rsa.pub > /home/{{ wordpress_user }}/.ssh/authorized_keys
   sudo: yes
 
 #- name: Allow ssh access only from localhost editing authorized_keys
