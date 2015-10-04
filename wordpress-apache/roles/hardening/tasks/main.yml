@@ -1,0 +1,86 @@
+---
+- name: Create a custom user and ssh keys
+  user:
+    name={{ wordpress_user }}
+    state=present
+    generate_ssh_key=yes
+    ssh_key_type=rsa
+    ssh_key_bits=4096
+    ssh_key_file=wp_rsa
+  sudo: yes
+
+- name: Set correct permission to ssh keys
+  file: 
+    path=/home/{{ wordpress_user }}/{{ item }}
+    owner={{ wordpress_user }}
+    group={{ webserver_group }}
+    mode=0640
+  sudo: yes
+  with_items:
+    - wp_rsa
+    - wp_rsa.pub
+
+- name: Create the .ssh directory
+  file:
+    path=/home/{{ wordpress_user }}/.ssh
+    state=directory
+    owner={{ wordpress_user }}
+    group={{ wordpress_user }}
+    mode=0700
+  sudo: yes
+
+- name: Create file authorized_keys
+  file:
+    path=/home/{{ wordpress_user }}/.ssh/authorized_keys
+    owner={{ wordpress_user }}
+    group={{ wordpress_user }}
+    mode=0644
+    state=present
+  sudo: yes
+
+- name: Populate authorized_keys
+  command: echo -n 'from="127.0.0.1" ' | cat - /home/{{ wordpress_user }}/wp_rsa.pub > /home/{{ wordpress_user }}/.ssh/authorized_keys
+  sudo: yes
+
+#- name: Allow ssh access only from localhost editing authorized_keys
+  #command: sed -i 's/ssh-rsa/from="127.0.0.1" ssh-rsa/g' /home/{{ wordpress_user}}/.ssh/authorized_keys
+  #sudo: yes
+
+- name: Update Wordpress config file for ssh access
+  lineinfile:
+    dest={{ wordpress_path }}/wp-config.php
+    state=present
+    regexp="{{ item.regexp }}"
+    line="{{ item.line }}"
+  with_items:
+    - {'regexp': "define\\('FTP_PUBKEY', '(.)+'\\);", 'line': "define('FTP_PUBKEY', '/home/{{ wordpress_user }}/wp_rsa.pub');"}        
+    - {'regexp': "define\\('FTP_PRIKEY', '(.)+'\\);", 'line': "define('FTP_PRIKEY', '/home/{{ wordpress_user }}/wp_rsa');"}        
+    - {'regexp': "define\\('FTP_USER', '(.)+'\\);", 'line': "define('FTP_USER', '{{ wordpress_user }}');"}        
+    - {'regexp': "define\\('FTP_PASS', ''\\);", 'line': "define('FTP_PASS', '');"}        
+    - {'regexp': "define\\('FTP_HOST', '(.)+'\\);", 'line': "define('FTP_HOST', '127.0.0.1:22');"}        
+  sudo: yes 
+
+- name: Set correct ownerwhip for the wordpress directory
+  file:
+    path={{ wordpress_path }}
+    state=directory
+    owner={{ wordpress_user }}
+    group={{ webserver_group }}
+    recurse=yes
+  sudo: yes
+
+- name: Set correct ownerwhip for the wp-content directory
+  file:
+    path={{ wordpress_path }}/wp-content
+    state=directory
+    mode=0775
+  sudo: yes
+
+- name: Create the uploads directory
+  file:
+    path={{ wordpress_path }}/wp-content/uploads
+    state=directory
+    owner={{ wordpress_user }}
+    group={{ webserver_group }}
+    mode=0775
+  sudo: yes

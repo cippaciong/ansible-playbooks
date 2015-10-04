@@ -1,0 +1,4 @@
+---
+wordpress_user: wp-user
+webserver_group: www-data
+wordpress_path: /var/www/wordpress
